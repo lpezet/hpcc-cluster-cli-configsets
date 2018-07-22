@@ -1,0 +1,25 @@
+# ----------------------------------------------------------------------------------
+# HPCC Installation and Setup
+# ----------------------------------------------------------------------------------
+HPCCSSL:
+  files:
+    "/tmp/setup_hpcc_ssl.sh":
+      content: |
+        #!/bin/bash
+        echo "Generating self-signed SSL Certificate..."
+        # Call function to deal with SSL....maybe this is a separate script too, like setup_av.sh
+        openssl req -subj '/CN=someorg.com/O=Some Org/C=US' -new -newkey rsa:2048 -sha256 -days 365 -nodes -x509 -keyout /tmp/server.key -out /tmp/server.crt
+
+        # ##########################################
+        # Setting up HPCC Systems
+        # ##########################################
+        if [ ! -d /var/lib/HPCCSystems/myesp ]; then
+          mkdir /var/lib/HPCCSystems/myesp
+          chown -R hpcc:hpcc /var/lib/HPCCSystems/myesp
+        fi
+        cp /tmp/server.crt /var/lib/HPCCSystems/myesp/certificate.cer
+        cp /tmp/server.key /var/lib/HPCCSystems/myesp/privatekey.cer
+  commands:
+    000_setup_ssl:
+      command: bash /tmp/setup_hpcc_ssl.sh
+      test: test ! -e /tmp/server.crt

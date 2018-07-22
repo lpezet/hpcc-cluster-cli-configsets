@@ -1,0 +1,26 @@
+BasicHardening:
+  files:
+    /tmp/cwlogs/conf.d/basic.conf:
+      mode: '000400'
+      owner: root
+      group: root
+      content: !Join 
+        # {instance_id}
+        - ''
+        - - |
+            [system-access_log]
+            file = /var/log/secure
+            log_group_name = ${Cluster.Name}-system
+          - log_stream_name = 
+          - !Ref ParamNodeName
+          - |
+                  
+            datetime_format = '%b %d %H:%M:%S'
+            [package-manager_log]
+            file = /var/log/yum.log
+            log_group_name = ${Cluster.Name}-packagemanager
+          - log_stream_name = 
+          - !Ref ParamNodeName
+          - |
+                    
+            datetime_format = '%b %d %H:%M:%S'

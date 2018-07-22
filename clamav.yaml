@@ -1,0 +1,58 @@
+# ----------------------------------------------------------------------------------
+# AV
+# ----------------------------------------------------------------------------------
+InstallAndSetupAV:
+  files:
+    /tmp/setup_av.sh:
+      mode: '000755'
+      owner: root
+      source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/setup_av.sh
+      group: root
+    /tmp/av_full_scan.cron:
+      mode: '000644'
+      owner: root
+      content: >
+        #!/bin/bash
+        # Version: 1.3.9
+        MAILTO=""
+        PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        30 10 * * * root /usr/bin/clamdscan --config-file=/etc/clamd.d/scan.conf / > /dev/null 2>&1
+        # Must keep this line or cron won't work.
+      group: root
+    /tmp/cwlogs/conf.d/av.conf:
+      mode: '000400'
+      owner: root
+      group: root
+      content: !Join 
+        # {instance_id}
+        - ''
+        - - |
+            [anti-virus_log]
+            file = /var/log/clamd.scan
+            log_group_name = ${Cluster.Name}-antivirus
+          - log_stream_name = 
+          - !Ref ParamNodeName
+          - |
+              
+            datetime_format = '%a %b %d %H:%M:%S %Y'
+  services:
+    sysvinit:
+      clamd.scan:
+        ensureRunning: true
+        enabled: true
+  packages:
+    yum:
+      clamav: []
+      clamav-update: []
+      clamd: []
+      clamav-scanner: []
+  commands:
+    011_cleanup_initd:
+      cwd: /etc/init.d
+      ignoreErrors: true
+      command: rm *.bak
+    001_setup_av:
+      command: /tmp/setup_av.sh
+    010_cleanup_cron:
+      command: cp /tmp/av_full_scan.cron /etc/cron.d/av_full_scan.cron
+      ignoreErrors: true
