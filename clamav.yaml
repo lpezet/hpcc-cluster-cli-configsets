@@ -33,7 +33,7 @@ InstallAndSetupAV:
           - log_stream_name = 
           - !Ref ParamNodeName
           - |
-              
+            
             datetime_format = '%a %b %d %H:%M:%S %Y'
   services:
     sysvinit:
