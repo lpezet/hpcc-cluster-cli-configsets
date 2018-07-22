@@ -1,79 +1,78 @@
 # ----------------------------------------------------------------------------------
 # OSSEC
 # ----------------------------------------------------------------------------------
-InstallAndSetupOSSEC:
-  files:
-    "/tmp/preloaded-vars.conf":
-      content: !Sub |
-        USER_LANGUAGE="en";
-        USER_NO_STOP="y";
-        USER_INSTALL_TYPE="local";
-        USER_DIR="/var/ossec";
-        USER_ENABLE_SYSCHECK="y";
-        USER_ENABLE_ROOTCHECK="y";
-        USER_UPDATE_RULES="y";
-        USER_ENABLE_EMAIL="n";
-        USER_ENABLE_FIREWALL_RESPONSE="n";
-        USER_ENABLE_ACTIVE_RESPONSE="n";
-      mode: "000644"
-      owner: "root"
-      group: "root"  
-    "/tmp/install_ossec.sh":
-      mode: "744"
-      owner: root
-      group: root
-      content: |
-        #!/bin/bash
-        # References: 
-        # https://github.com/ossec/ossec-hids
-        # https://aws.amazon.com/blogs/security/how-to-monitor-host-based-intrusion-detection-system-alerts-on-amazon-ec2-instances/#more-3200
-        echo "Installing OSSEC..."
-        ossec_version="2.9.0"
-        ossec_checksum="abd5741dc474cbce5cc116f46a5ef2528c847918" 
-        # Download
-        wget -O /tmp/ossec-hids-${ossec_version}.tar.gz https://github.com/ossec/ossec-hids/archive/${ossec_version}.tar.gz
-        # Check & Unzip
-        checksum=$(sha1sum /tmp/ossec-hids-${ossec_version}.tar.gz | cut -d" " -f1);
-        if [ "$checksum" == "$ossec_checksum" ]; then
-          echo "Extracting OSSEC..."
-          tar xfz /tmp/ossec-hids-${ossec_version}.tar.gz -C /tmp/
-        else
-          echo "Wrong checksum. Download again or check if file has been tampered with.";
-          exit 1
-        fi
-        # Install
-        cp /tmp/preloaded-vars.conf /tmp/ossec-hids-${ossec_version}/etc/ && cd /tmp/ossec-hids-${ossec_version} && ./install.sh
-        # Setup
-        sed -i '/<global>/a \    \<jsonout_output>yes<\/jsonout_output>' /var/ossec/etc/ossec.conf
-        #[ -d /var/log/httpd ] && sed -i '/Files to monitor/a <localfile>\n \    \<log_format>apache<\/log_format>\n \    \<location>\/var\/log\/httpd\/access_log<\/location>\n<\/localfile>' /var/ossec/etc/ossec.conf
-        [ -d /var/log/httpd ] && /var/ossec/bin/util.sh addfile /var/log/httpd/access_log apache
-        [ -d /var/log/nginx ] && /var/ossec/bin/util.sh addfile /var/log/nginx/access.log && /var/ossec/bin/util.sh addfile /var/log/nginx/error.log
-        echo "Done installing OSSEC."
-    "/tmp/cwlogs/conf.d/hids.conf":
-      mode: '000400'
-      owner: root
-      group: root
-      content: !Join 
-        # {instance_id}
-        - ''
-        - - |
-            [ossec_log]
-            file = /var/ossec/logs/alerts/alerts.json
-            log_group_name = ${Cluster.Name}-hids
-          - log_stream_name =
-          - !Ref ParamNodeName
-          - |
-                    
-            datetime_format = '%m/%d-%H:%M:%S.%f'
-  packages:
-    yum:
-      gcc: []
-      make: []
-      glibc-devel: []
-      patch: []
-    commands:
-      001_install_ossec:
-        command: "/tmp/install_ossec.sh"
-        test: "[ ! -d /var/ossec ]"
-      100_start_ossec:
-        command: "/var/ossec/bin/ossec-control start"
+files:
+  "/tmp/preloaded-vars.conf":
+    content: !Sub |
+      USER_LANGUAGE="en";
+      USER_NO_STOP="y";
+      USER_INSTALL_TYPE="local";
+      USER_DIR="/var/ossec";
+      USER_ENABLE_SYSCHECK="y";
+      USER_ENABLE_ROOTCHECK="y";
+      USER_UPDATE_RULES="y";
+      USER_ENABLE_EMAIL="n";
+      USER_ENABLE_FIREWALL_RESPONSE="n";
+      USER_ENABLE_ACTIVE_RESPONSE="n";
+    mode: "000644"
+    owner: "root"
+    group: "root"  
+  "/tmp/install_ossec.sh":
+    mode: "744"
+    owner: root
+    group: root
+    content: |
+      #!/bin/bash
+      # References: 
+      # https://github.com/ossec/ossec-hids
+      # https://aws.amazon.com/blogs/security/how-to-monitor-host-based-intrusion-detection-system-alerts-on-amazon-ec2-instances/#more-3200
+      echo "Installing OSSEC..."
+      ossec_version="2.9.0"
+      ossec_checksum="abd5741dc474cbce5cc116f46a5ef2528c847918" 
+      # Download
+      wget -O /tmp/ossec-hids-${ossec_version}.tar.gz https://github.com/ossec/ossec-hids/archive/${ossec_version}.tar.gz
+      # Check & Unzip
+      checksum=$(sha1sum /tmp/ossec-hids-${ossec_version}.tar.gz | cut -d" " -f1);
+      if [ "$checksum" == "$ossec_checksum" ]; then
+        echo "Extracting OSSEC..."
+        tar xfz /tmp/ossec-hids-${ossec_version}.tar.gz -C /tmp/
+      else
+        echo "Wrong checksum. Download again or check if file has been tampered with.";
+        exit 1
+      fi
+      # Install
+      cp /tmp/preloaded-vars.conf /tmp/ossec-hids-${ossec_version}/etc/ && cd /tmp/ossec-hids-${ossec_version} && ./install.sh
+      # Setup
+      sed -i '/<global>/a \    \<jsonout_output>yes<\/jsonout_output>' /var/ossec/etc/ossec.conf
+      #[ -d /var/log/httpd ] && sed -i '/Files to monitor/a <localfile>\n \    \<log_format>apache<\/log_format>\n \    \<location>\/var\/log\/httpd\/access_log<\/location>\n<\/localfile>' /var/ossec/etc/ossec.conf
+      [ -d /var/log/httpd ] && /var/ossec/bin/util.sh addfile /var/log/httpd/access_log apache
+      [ -d /var/log/nginx ] && /var/ossec/bin/util.sh addfile /var/log/nginx/access.log && /var/ossec/bin/util.sh addfile /var/log/nginx/error.log
+      echo "Done installing OSSEC."
+  "/tmp/cwlogs/conf.d/hids.conf":
+    mode: '000400'
+    owner: root
+    group: root
+    content: !Join 
+      # {instance_id}
+      - ''
+      - - |
+          [ossec_log]
+          file = /var/ossec/logs/alerts/alerts.json
+          log_group_name = ${Cluster.Name}-hids
+        - log_stream_name =
+        - !Ref ParamNodeName
+        - |
+          
+          datetime_format = '%m/%d-%H:%M:%S.%f'
+packages:
+  yum:
+    gcc: []
+    make: []
+    glibc-devel: []
+    patch: []
+  commands:
+    001_install_ossec:
+      command: "/tmp/install_ossec.sh"
+      test: "[ ! -d /var/ossec ]"
+    100_start_ossec:
+      command: "/var/ossec/bin/ossec-control start"

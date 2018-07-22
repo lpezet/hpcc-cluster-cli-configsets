@@ -1,47 +1,46 @@
-InstallAndSetupIDS:
-  files:
-    /tmp/install_snort.sh:
-      mode: '744'
-      owner: root
-      source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/install_snort.sh
-      group: root
-    /tmp/snort-2.3.1-1.x86_64.rpm:
-      mode: '644'
-      owner: root
-      source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/snort-2.3.1-1.x86_64.rpm
-      group: root
-    /tmp/daq-1.1.1.tar.gz:
-      mode: '644'
-      owner: root
-      source: https://www.snort.org/downloads/archive/snort/daq-1.1.1.tar.gz
-      group: root
-    /tmp/cwlogs/conf.d/nids.conf:
-      mode: '000400'
-      owner: root
-      group: root
-      content: !Join 
-        # {instance_id}
-        - ''
-        - - |
-            [ids_log]
-            file = /var/log/snort/alert
-            log_group_name = ${Cluster.Name}-ids
-          - log_stream_name = 
-          - !Ref ParamNodeName
-          - |
-                    
-            datetime_format = '%m/%d-%H:%M:%S.%f'
-  packages:
-    yum:
-      gcc: []
-      flex: []
-      tcpdump: []
-      libpcap-devel: []
-      bison: []
-      pcre-devel: []
-  commands:
-    100_start_snort:
-      command: /etc/init.d/snortd start
-    001_install_snort:
-      test: '! rpm --quiet -q snort'
-      command: /tmp/install_snort.sh
+files:
+  /tmp/install_snort.sh:
+    mode: '744'
+    owner: root
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/install_snort.sh
+    group: root
+  /tmp/snort-2.3.1-1.x86_64.rpm:
+    mode: '644'
+    owner: root
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/snort-2.3.1-1.x86_64.rpm
+    group: root
+  /tmp/daq-1.1.1.tar.gz:
+    mode: '644'
+    owner: root
+    source: https://www.snort.org/downloads/archive/snort/daq-1.1.1.tar.gz
+    group: root
+  /tmp/cwlogs/conf.d/nids.conf:
+    mode: '000400'
+    owner: root
+    group: root
+    content: !Join 
+      # {instance_id}
+      - ''
+      - - |
+          [ids_log]
+          file = /var/log/snort/alert
+          log_group_name = ${Cluster.Name}-ids
+        - log_stream_name = 
+        - !Ref ParamNodeName
+        - |
+          
+          datetime_format = '%m/%d-%H:%M:%S.%f'
+packages:
+  yum:
+    gcc: []
+    flex: []
+    tcpdump: []
+    libpcap-devel: []
+    bison: []
+    pcre-devel: []
+commands:
+  100_start_snort:
+    command: /etc/init.d/snortd start
+  001_install_snort:
+    test: '! rpm --quiet -q snort'
+    command: /tmp/install_snort.sh
