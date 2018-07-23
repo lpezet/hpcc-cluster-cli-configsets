@@ -3,14 +3,14 @@
 # ----------------------------------------------------------------------------------
 files:
   /opt/hpcc-cluster/functions:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli/master/scripts/functions
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/functions
   /opt/hpcc-cluster/hpcc_setup_volumes.sh:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli/master//scripts/hpcc_setup_volumes.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/hpcc_setup_volumes.sh
   /opt/hpcc-cluster/hpcc_cluster_ephemeral.sh:
-  source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli/master/scripts/hpcc_cluster_ephemeral.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/hpcc_cluster_ephemeral.sh
     mode: "00755"
   /opt/hpcc-cluster/install_hpcc.sh:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli/master/scripts/install_hpcc.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/install_hpcc.sh
   /opt/hpcc-cluster/volumes.maps:
     content: |
       declare -a volumesMappings
