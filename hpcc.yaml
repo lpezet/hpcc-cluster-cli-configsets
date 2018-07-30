@@ -5,12 +5,12 @@ files:
   /opt/hpcc-cluster/functions:
     source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/functions
   /opt/hpcc-cluster/hpcc_setup_volumes.sh:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/hpcc_setup_volumes.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/hpcc_setup_volumes.sh
   /opt/hpcc-cluster/hpcc_cluster_ephemeral.sh:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/hpcc_cluster_ephemeral.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/hpcc_cluster_ephemeral.sh
     mode: "00755"
   /opt/hpcc-cluster/install_hpcc.sh:
-    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configset/master/scripts/install_hpcc.sh
+    source: https://raw.githubusercontent.com/lpezet/hpcc-cluster-cli-configsets/master/scripts/install_hpcc.sh
   /opt/hpcc-cluster/volumes.maps:
     content: |
       declare -a volumesMappings
@@ -38,6 +38,8 @@ files:
 commands:
   001_install_and_setup_hpcc:
     command: bash /opt/hpcc-cluster/install_hpcc.sh
+    env:
+      HPCC_VERSION: ${Cluster.Version} 
   002_copy_ephemeral_init:
     command: cp /opt/hpcc-cluster/hpcc_cluster_ephemeral.sh /etc/init.d/hpcc_cluster_ephemeral 
   003_install_ephemeral_init:
