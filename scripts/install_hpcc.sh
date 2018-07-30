@@ -2,9 +2,9 @@
 
 build_version=${HPCC_VERSION}
 version=$(echo ${HPCC_VERSION} | sed "s/-.*//g")
-echo "Downloading HPCC Systems..." >> /var/log/hpcc-cluster.log
+echo "Downloading HPCC Systems ${HPCC_VERSION}..." >> /var/log/hpcc-cluster.log
 curl -o /tmp/hpccsystems-platform-community_${build_version}.el6.x86_64.rpm http://cdn.hpccsystems.com/releases/CE-Candidate-${version}/bin/platform/hpccsystems-platform-community_${build_version}.el6.x86_64.rpm
-echo "Installing HPCC Systems..." >> /var/log/hpcc-cluster.log
+echo "Installing HPCC Systems ${HPCC_VERSION}..." >> /var/log/hpcc-cluster.log
 yum -y install /tmp/hpccsystems-platform-community_${build_version}.el6.x86_64.rpm
 echo "Installing httpd tools..." >> /var/log/hpcc-cluster.log
 yum -y install httpd-tools
