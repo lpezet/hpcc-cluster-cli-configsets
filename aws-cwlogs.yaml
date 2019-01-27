@@ -1,0 +1,25 @@
+files:
+  /tmp/cwlogs/awslogs-agent-setup.py:
+    mode: '000700'
+    owner: root
+    source: https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+    group: root
+  /tmp/cwlogs/conf.d/general.conf:
+    mode: '000400'
+    owner: root
+    content: |
+      [general]
+      state_file = /var/awslogs/state/agent-state
+    group: root
+
+commands:
+  01-setup-agent-config:
+    command: |
+      cat /tmp/cwlogs/conf.d/*.conf > /tmp/cwlogs/cwlogs-config.conf
+  02-setup-cwlogs-agent:
+    command: !Join 
+      - ''
+      - - 'setsid /tmp/cwlogs/awslogs-agent-setup.py -n -r '
+        - !Ref 'AWS::Region'
+        - |2
+           -c /tmp/cwlogs/cwlogs-config.conf && exit 0;
