@@ -20,6 +20,9 @@ run() {
     continue
    fi
    prepare_device $deviceName $deviceType $fsType "" $encrypt
+   if [ -z "$mount" ]; then
+    continue
+   fi
    prepare_mount $mount $mapsTo
    mount_device $deviceName $deviceType $mount   
   done
